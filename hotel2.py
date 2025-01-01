@@ -6,19 +6,6 @@ wn.geometry("350x450")
 wn.title("Roomeo")
 wn.resizable(width=False, height=False)
 
-name_label = Label(wn)
-name_label.pack()
-airplane_label = Label()
-airplane_label.pack()
-
-
-name = PhotoImage(file = r"images\namer.png")
-name_label.config(image=name)
-name_label.image = name
-
-airplane= PhotoImage(file = r"images\airplane.png")
-airplane_label.config(image=airplane)
-airplane_label.image = airplane
 
 
 btn1= Button(wn, text="sign in", bg="#6EA3CF", width=11, height=3)
