@@ -239,20 +239,40 @@ def search_page():
       info = {'ad':hotel_bilgisi['ad'],'adres': hotel_bilgisi['adres'], 'tel': hotel_bilgisi['tel'],'ucret':hotel_bilgisi['ucret']}
       hotel.append(info)
       favorites(hotel)
+  
+  def hotel_bo_kaydet():
+    hotel=[]
+    secili_hotel = hotelListbox.curselection()
+    print(secili_hotel)
+    if secili_hotel:
+      hotel_bilgisi = hotels[secili_hotel[0]]
+      print(hotel_bilgisi )
+      info = {'ad':hotel_bilgisi['ad'],'adres': hotel_bilgisi['adres'], 'tel': hotel_bilgisi['tel'],'ucret':hotel_bilgisi['ucret']}
+      hotel.append(info)
       booked(hotel)
+  
+  def hotel_info():
+    hotel=[]
+    secili_hotel = hotelListbox.curselection()
+    if secili_hotel:
+      hotel_bilgisi = hotels[secili_hotel[0]]
+      info = {'ad':hotel_bilgisi['ad'],'adres': hotel_bilgisi['adres'],'ucret':hotel_bilgisi['ucret']}
+      messagebox.showinfo("Info",info)
+
     
+  infogoster= Button(search_screen, text="show info", bg="#DD9541", command=hotel_info)
+  infogoster.place(x=150, y=120)
 
-
-  btn1= Button(search_screen, text="search", bg="#6EA3CF", width=11, height=3,command=search_page)
+  btn1= Button(search_screen, text="search", bg="#6EA3CF", width=12, height=3,command=search_page)
   btn1.place(x=0, y=400)
 
-  btn2= Button(search_screen, text="saved", bg="#6EA3CF", width=11, height=3,command=hotel_kaydet)
-  btn2.place(x=80, y=400)
+  btn2= Button(search_screen, text="saved", bg="#6EA3CF", width=12, height=3,command=hotel_kaydet)
+  btn2.place(x=85, y=400)
 
-  btn3= Button(search_screen, text="booking", bg="#6EA3CF", width=11, height=3,command=hotel_kaydet)
-  btn3.place(x=180, y=400)
+  btn3= Button(search_screen, text="booking", bg="#6EA3CF", width=12, height=3,command=hotel_bo_kaydet)
+  btn3.place(x=175, y=400)
 
-  btn4= Button(search_screen, text="profile", bg="#6EA3CF", width=11, height=3,command=profile_page)
+  btn4= Button(search_screen, text="profile", bg="#6EA3CF", width=12, height=3,command=profile_page)
   btn4.place(x=265, y=400)
 
 # ---------------------------------------------------------------------------- #
@@ -279,21 +299,55 @@ def saved_page():
 
     favorites.commit()
     favorites.close()
-    listeKutusu=Listbox(saved_screen,height=20,width=40)
-    listeKutusu.place(x=20,y=10)
+    listeKutusu=Listbox(saved_screen,height=15,width=40)
+    listeKutusu.place(x=50,y=110)
     for bilgi in bilgiler:            
-            listeKutusu.insert(END,bilgi)
+      listeKutusu.insert(END,bilgi)
+    
 
-    btn1= Button(saved_screen, text="search", bg="#6EA3CF", width=11, height=3,command=search_page)
+    def sil():
+      cevap = messagebox.askokcancel("DELETE", "Are you sure to delete?")
+      print(cevap)
+      if cevap==True:
+        silinecek = listeKutusu.curselection()[0]
+        secilen = listeKutusu.get(silinecek)
+        print(secilen)
+        favorites=sqlite3.connect("favorites2.db")
+        curr=favorites.cursor()
+
+        curr.execute('''DELETE FROM favorites2 WHERE ID = ?''',(secilen[0],))
+        favorites.commit()
+        favorites.close()
+
+        favorites=sqlite3.connect("favorites2.db")
+        curr=favorites.cursor()
+
+        curr.execute(''' SELECT * FROM  favorites2''')
+      # fetch işlemi bir şeyi al getir anlamında. Burdada verileri çekmek için kullanılır.
+        bilgiler=curr.fetchall()
+  
+
+        favorites.commit()
+        favorites.close()
+        listeKutusu.delete(0,END)
+        for bilgi in bilgiler:            
+          listeKutusu.insert(END,bilgi)
+
+  
+    btn1= Button(saved_screen, text="delete", bg="#AF0002",command=sil)
+    btn1.place(x=300, y=350)
+
+    
+    btn1= Button(saved_screen, text="search", bg="#6EA3CF", width=12, height=3,command=search_page)
     btn1.place(x=0, y=400)
 
-    btn2= Button(saved_screen, text="saved", bg="#6EA3CF", width=11, height=3,command=saved_page)
-    btn2.place(x=80, y=400)
+    btn2= Button(saved_screen, text="saved", bg="#6EA3CF", width=12, height=3,command=saved_page)
+    btn2.place(x=85, y=400)
 
-    btn3= Button(saved_screen, text="booking", bg="#6EA3CF", width=11, height=3,command=booking_page)
-    btn3.place(x=180, y=400)
+    btn3= Button(saved_screen, text="booking", bg="#6EA3CF", width=12, height=3,command=booking_page)
+    btn3.place(x=175, y=400)
 
-    btn4= Button(saved_screen, text="profile", bg="#6EA3CF", width=11, height=3,command=profile_page)
+    btn4= Button(saved_screen, text="profile", bg="#6EA3CF", width=12, height=3,command=profile_page)
     btn4.place(x=265, y=400)
 
 # ---------------------------------------------------------------------------- #
@@ -324,7 +378,7 @@ def booking_page():
   booking = PhotoImage(file = r"images\booking.png")
   booking_label.config(image=booking)
   booking_label.image = booking
-  #-----#
+#-----#
   booked=sqlite3.connect("booked2.db")
   curr=booked.cursor()
 
@@ -335,23 +389,55 @@ def booking_page():
 
   booked.commit()
   booked.close()
-  bKutusu=Listbox(booking_screen,height=20,width=40)
-  bKutusu.place(x=20,y=10)
+  bKutusu=Listbox(booking_screen,height=15,width=40)
+  bKutusu.place(x=50,y=110)
   for bilgi in bilgiler:            
     bKutusu.insert(END,bilgi)
-  #-----#
+#-----#
+  def sil():
+    cevap = messagebox.askokcancel("DELETE", "Are you sure to delete?")
+    print(cevap)
+    if cevap==True:
+      silinecek = bKutusu.curselection()[0]
+      secilen = bKutusu.get(silinecek)
+      print(secilen)
+      booked=sqlite3.connect("booked2.db")
+      curr=booked.cursor()
 
-  btn1= Button(booking_screen, text="search", bg="#6EA3CF", width=11, height=3,command=search_page)
+      curr.execute('''DELETE FROM booked2 WHERE ID = ?''',(secilen[0],))
+      booked.commit()
+      booked.close()
+
+      booked=sqlite3.connect("booked2.db")
+      curr=booked.cursor()
+
+      curr.execute(''' SELECT * FROM  booked2''')
+      # fetch işlemi bir şeyi al getir anlamında. Burdada verileri çekmek için kullanılır.
+      bilgiler=curr.fetchall()
+  
+
+      booked.commit()
+      booked.close()
+      bKutusu.delete(0,END)
+      for bilgi in bilgiler:            
+        bKutusu.insert(END,bilgi)
+#---------#
+  
+  btn1= Button(booking_screen, text="delete", bg="#AF0002",command=sil)
+  btn1.place(x=300, y=350)
+
+  btn1= Button(booking_screen, text="search", bg="#6EA3CF", width=12, height=3,command=search_page)
   btn1.place(x=0, y=400)
 
-  btn2= Button(booking_screen, text="saved", bg="#6EA3CF", width=11, height=3,command=saved_page)
-  btn2.place(x=80, y=400)
+  btn2= Button(booking_screen, text="saved", bg="#6EA3CF", width=12, height=3,command=saved_page)
+  btn2.place(x=85, y=400)
 
-  btn3= Button(booking_screen, text="booking", bg="#6EA3CF", width=11, height=3,command=booking_page)
-  btn3.place(x=180, y=400)
+  btn3= Button(booking_screen, text="booking", bg="#6EA3CF", width=12, height=3,command=booking_page)
+  btn3.place(x=175, y=400)
 
-  btn4= Button(booking_screen, text="profile", bg="#6EA3CF", width=11, height=3,command=profile_page)
+  btn4= Button(booking_screen, text="profile", bg="#6EA3CF", width=12, height=3,command=profile_page)
   btn4.place(x=265, y=400)
+  
 
   # ---------------------------------------------------------------------------- #
 def booked(hotel):
@@ -377,15 +463,24 @@ def profile_page():
 
   profile_label = Label(profile_screen)
   profile_label.pack()
+#----------#
+  bilgiler=sqlite3.connect("bilgiler.db")
+  curr=bilgiler.cursor()
 
-
-
+  curr.execute(''' SELECT * FROM  Customer''')
+    # fetch işlemi bir şeyi al getir anlamında. Burdada verileri çekmek için kullanılır.
+  bilgi=curr.fetchall()
+  
+  bilgiler.commit()
+  bilgiler.close()
+#----------#
+  print(bilgi)
   profile = PhotoImage(file = r"images\profile.png")
   profile_label.config(image=profile)
   profile_label.image = profile
 
 
-  btn_help= Button(profile_screen, text="help", bg="grey", width=10, height=2, command=help_page)
+  btn_help= Button(profile_screen, text="help", bg="#DD9541", width=10, height=2, command=help_page)
   btn_help.place(x=20, y=250)
 
 
@@ -417,16 +512,16 @@ def profile_page():
   password_label.pack()
   password_label.place(x=20,y=200)
 
-  btn1= Button(profile_screen, text="search", bg="#6EA3CF", width=11, height=3,command=search_page)
+  btn1= Button(profile_screen, text="search", bg="#6EA3CF", width=12, height=3,command=search_page)
   btn1.place(x=0, y=400)
 
-  btn2= Button(profile_screen, text="saved", bg="#6EA3CF", width=11, height=3,command=saved_page)
-  btn2.place(x=80, y=400)
+  btn2= Button(profile_screen, text="saved", bg="#6EA3CF", width=12, height=3,command=saved_page)
+  btn2.place(x=85, y=400)
 
-  btn3= Button(profile_screen, text="booking", bg="#6EA3CF", width=11, height=3,command=booking_page)
-  btn3.place(x=180, y=400)
+  btn3= Button(profile_screen, text="booking", bg="#6EA3CF", width=12, height=3,command=booking_page)
+  btn3.place(x=175, y=400)
 
-  btn4= Button(profile_screen, text="profile", bg="#6EA3CF", width=11, height=3,command=profile_page)
+  btn4= Button(profile_screen, text="profile", bg="#6EA3CF", width=12, height=3,command=profile_page)
   btn4.place(x=265, y=400)
 # ---------------------------------------------------------------------------- #
 def help_page():
@@ -441,7 +536,46 @@ def help_page():
   help = PhotoImage(file = r"images\help.png")
   help_label.config(image=help)
   help_label.image = help
+#--------#
+  def gonder():
+    konusma=bilgiGirisi.get()
+    goster(konusma)
+    cevap(konusma)
+    bilgiGirisi.delete(0,END)
 
+  def goster(msj):
+    cevap2.insert(END,msj+"\n")
+  
+  def cevap(soru):
+    soru=soru.lower()
+    cevaplar={
+        "hello":"Hello if you need help, you can ask me",
+        "how can i delete saved items":"just chose it and then click delete.",
+        "how can i delete booked items":"just chose it and then click delete.",
+        "how can i change my e-mail":"such a setting does not  exist yet",
+        "how can i change my name":"such a setting does not  exist yet",
+        "how can i change my password":"such a setting does not  exist yet",
+        "how can i delete my account":"such a setting does not exist yet"
+        }
+    yapayZekaCevabi=cevaplar.get(soru,"Unfortunately, we don't have an answer to this question.")
+    # get ile soru cevapların içindeyse onu alır, yoksa üzgünüm anlayamadım yazısını alır
+    print(yapayZekaCevabi)
+    goster(yapayZekaCevabi)
+
+  bilgiGirisi=Entry(help_screen)
+  bilgiGirisi.place(x=120,y=100)
+
+  cevap2=Text(help_screen,width=30,height=15)
+  cevap2.place(x=50,y=170)
+
+
+  gonder=Button(help_screen,text="search",bg="#DD9541",font=("Georgia 10"),command=gonder)
+  gonder.place(x=150,y=130)
+
+  geri=Button(help_screen,text="back",bg="#2584F1",font=("Georgia 10"),command=profile_page)
+  geri.place(x=300,y=420)
+
+#--------#
 
 # ---------------------------------------------------------------------------- #
 def sign_in():
@@ -449,8 +583,47 @@ def sign_in():
   sign_in_screen.geometry("350x450")
   sign_in_screen.title("Roomeo_sign_in")
   sign_in_screen.resizable(width=False, height=False)
-  btn_devam= Button(sign_in_screen, text="ok", bg="grey", width=5, height=1, font=("arial 12"),command=search_page)
+
+  Label(  sign_in_screen, text="email:").place(x=90, y=80)
+  email2 = Entry(  sign_in_screen)
+  email2.place(x=150, y=80)
+
+  Label(  sign_in_screen, text="password:").place(x=90, y=160)
+  password2 = Entry(  sign_in_screen)
+  password2.place(x=150, y=160)
+
+  def kayit_control():
+    eposta = email2.get()
+    sifre = password2.get()
+
+    hotelVeritabani=sqlite3.connect("bilgiler.db")
+    curr=hotelVeritabani.cursor()
+    curr.execute(''' SELECT * FROM  Customer''')
+    # fetch işlemi bir şeyi al getir anlamında. Burdada verileri çekmek için kullanılır.
+    bilgiler=curr.fetchall()
+    hotelVeritabani.commit()
+    hotelVeritabani.close()
+
+    print(bilgiler)
+
+
+    check=False
+    for hotel in bilgiler:
+      if hotel[1] == eposta :       
+        check=True
+
+    if check==True :
+      search_page()
+    
+    else:
+      messagebox.showinfo("Warning","You don't have a account, please create a account")
+      sign_in_screen.after(1000,create_account)
+
+  btn_devam= Button(sign_in_screen, text="ok", bg="#CF59CB", width=5, height=1, font=("arial 12"),command=kayit_control)
   btn_devam.place(x=150, y=300)
+
+
+
 
 # ---------------------------------------------------------------------------- #
 def create_account():
@@ -460,25 +633,6 @@ def create_account():
   create_account_screen.resizable(width=False, height=False)
   
   iiinfo = f"Try it at sing in, maybe you have already a account."
-
-    
-    
-  def Kaydet(email,name,password):
-    global ID
-    ID = int(datetime.now().timestamp())
-
-    hotelVeritabani=sqlite3.connect("bilgiler.db")
-    curr=hotelVeritabani.cursor()
-    curr.execute('''
-    INSERT INTO Customer (CustomerID, email, name, password)
-    VALUES (?,?,?,?)
-    ''', (ID, email, name, password))
-    hotelVeritabani.commit()
-    hotelVeritabani.close()
-    print("Veri kaydedildi.")
-    # if  :                                                                   #<----account war sa
-    #   messagebox.showinfo(iiinfo)
-
 
   Label(create_account_screen, text="email:").place(x=90, y=80)
   email = Entry(create_account_screen)
@@ -492,15 +646,58 @@ def create_account():
   password = Entry(create_account_screen)
   password.place(x=150, y=160)
 
-  email = email.get()
-  name = name.get()
-  password = password.get()
+    
+  def Kaydet():
+    global ID
 
-  btn_devam= Button(create_account_screen, text="save", bg="grey", width=5, height=1, font=("arial 12"),command=lambda:Kaydet(email,name,password))
-  btn_devam.place(x=80, y=300)
+    eposta = email.get()
+    isim = name.get()
+    sifre = password.get()
 
-  btn_devam= Button(create_account_screen, text="go", bg="grey", width=5, height=1, font=("arial 12"),command=search_page)
-  btn_devam.place(x=230, y=300)
+    hotelVeritabani=sqlite3.connect("bilgiler.db")
+    curr=hotelVeritabani.cursor()
+    curr.execute(''' SELECT * FROM  Customer''')
+    # fetch işlemi bir şeyi al getir anlamında. Burdada verileri çekmek için kullanılır.
+    bilgiler=curr.fetchall()
+    hotelVeritabani.commit()
+    hotelVeritabani.close()
+
+    print(bilgiler)
+
+
+    check=False
+    for hotel in bilgiler:
+      if hotel[1] == eposta :       
+        check=True
+
+    if check==True :
+        messagebox.showinfo("Warning","You already have a account, please sign in")
+        create_account_screen.after(1000,sign_in)
+
+    else:
+      ID = int(datetime.now().timestamp())
+  
+      hotelVeritabani=sqlite3.connect("bilgiler.db")
+      curr=hotelVeritabani.cursor()
+      curr.execute('''
+      INSERT INTO Customer (CustomerID, email, name, password)
+      VALUES (?,?,?,?)
+      ''', (ID, eposta,isim,sifre))
+      hotelVeritabani.commit()
+      hotelVeritabani.close()
+      print("Veri kaydedildi.")
+      search_page()
+
+
+
+
+  btn_devam= Button(create_account_screen, text="save", bg="#CF59CB", font=("arial 12"),command=Kaydet)
+  btn_devam.place(x=160, y=300)
+
+
+  # btn_devam= Button(create_account_screen, text="go", bg="grey", width=5, height=1, font=("arial 12"),command=search_page)
+  # btn_devam.place(x=230, y=300)
+
 # ---------------------------------------------------------------------------- #
 
 
@@ -524,8 +721,6 @@ btn_sign_in.place(x=60, y=360)
 
 btn_create_account= Button(wn, text="create account", bg="#B54D3D", width=11, height=3, font=("arial 12"), command=create_account)
 btn_create_account.place(x=200, y=360)
-
-
 
 
 wn.mainloop()
