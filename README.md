@@ -11,7 +11,7 @@ Veri yönetimi için arka planda bir veritabanı kullanılmıştır. Böylece t�
 
 > Buraya uygulamanın ekran görüntüsünü ekleyebilirsin. Örnek:
 
-![Uygulama Arayüzü](images/reservation.gif)
+![Uygulama Arayüzü](images/reservation.png)
 
 ## 🛠️ Kullanılan Teknolojiler
 
