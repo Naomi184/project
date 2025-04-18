@@ -11,7 +11,7 @@ Veri yönetimi için arka planda bir veritabanı kullanılmıştır. Böylece t�
 
 > Buraya uygulamanın ekran görüntüsünü ekleyebilirsin. Örnek:
 
-![Uygulama Arayüzü](assets/gorsel_eklenecek_yer.png)
+![Uygulama Arayüzü](images/reservation.gif)
 
 ## 🛠️ Kullanılan Teknolojiler
 
